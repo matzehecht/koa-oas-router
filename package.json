@@ -1,0 +1,36 @@
+{
+  "name": "koa-oas-router",
+  "version": "0.0.0",
+  "description": "This module extends the koa-router with some features usable with oas.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start:test": "ts-node tmp/test.js",
+    "prebuild": "rimraf ./dist",
+    "build": "tsc",
+    "prepublish": "rimraf ./dist && tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maHecht/koa-oas-router.git"
+  },
+  "keywords": [
+    "koa",
+    "oas",
+    "koa-router"
+  ],
+  "author": "Matthias Hecht",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/maHecht/koa-oas-router/issues"
+  },
+  "homepage": "https://github.com/maHecht/koa-oas-router#readme",
+  "devDependencies": {
+    "@types/node": "^12.7.1",
+    "rimraf": "^2.6.3",
+    "ts-node": "^8.3.0",
+    "tslint": "^5.18.0",
+    "typescript": "^3.5.3"
+  }
+}

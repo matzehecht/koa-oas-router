@@ -1,2 +1,2 @@
-# koa-oas3-router
-This module extends the koa-router module to do an automatic routing based on an open api specification version 3.
+# koa-oas-router
+This module extends the koa-router with some features usable with oas.
