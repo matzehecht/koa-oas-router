@@ -1,0 +1,31 @@
+{
+    "logger": {
+        "fatal": {
+            "mapToRouter_INVALIDMETHOD": "Invalid method:"
+        },
+        "error": {
+            "addRoutesFromSpecification_SPECUNDEFINED": "Specification not defined!",
+            "addRoutesFromSpecification_PATHUNDEFINED": "Paths not found!",
+            "addRoutesFromSpecification_IMPORTERROR": "Import failed:"
+        },
+        "warn": {
+            "addRoutesFromSpecification_IMPORTMODULENOTFOUND": "Module not found and don't provide stub:",
+            "addRoutesFromSpecification_CONTROLLERFUNCTIONNOTFOUND": "Function not found and don't provide stub:"
+        },
+        "info": {
+            "addRoutesFromSpecification_INITCONTROLLERBASEPATH": "Basepath of controller:",
+            "addRoutesFromSpecification_INITVALIDATESPEC": "Validate specification?",
+            "addRoutesFromSpecification_INITPROVIDESTUBS": "Do provide stubs?",
+            "mapToRouter_MAPPED": "Mapped method of path to controller:"
+        },
+        "debug": {
+            "addRoutesFromSpecification_LOOPTAGS": "Looping through these tags:",
+            "addRoutesFromSpecification_LOOPOPERATIONS": "Looping through these operations:",
+            "addRoutesFromSpecification_TRYTOIMPORTCONTROLLER": "Try to import controller with path:",
+            "addRoutesFromSpecification_IMPORTCONTROLLER": "Imported controller:",
+            "addRoutesFromSpecification_IMPORTMODULENOTFOUND": "Module of following controller not found:",
+            "addRoutesFromSpecification_CONTROLLERFUNCTIONFOUND": "Found function in controller:",
+            "addRoutesFromSpecification_CONTROLLERFUNCTIONNOTFOUND": "Function not found:"
+        }
+    }
+}

@@ -1,0 +1,7 @@
+{
+    "addRoutesFromSpecification": {
+        "CONTROLLER_BASE_PATH": "../controller",
+        "VALIDATE_SPECIFICATION":  true,
+        "PROVIDE_STUBS": true
+    }
+}

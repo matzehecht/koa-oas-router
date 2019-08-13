@@ -2,31 +2,8 @@ import * as path from 'path';
 import * as Router from 'koa-router';
 import { Logger } from 'logger';
 
-const CONTROLLER_BASE_PATH: string = '../controller';
-const VALIDATE_SPECIFICATION: boolean = true;
-const PROVIDE_STUBS: boolean = true;
-
-const FATAL_mapToRouter_INVALIDMETHOD: string = 'Invalid method:';
-
-const ERROR_addRoutesFromSpecification_SPECUNDEFINED: string = 'Specification not defined!';
-const ERROR_addRoutesFromSpecification_PATHUNDEFINED: string = 'Paths not found!';
-const ERROR_addRoutesFromSpecification_IMPORTERROR: string = 'Import failed:';
-
-const INFO_addRoutesFromSpecification_INITCONTROLLERBASEPATH: string = 'Basepath of controller:';
-const INFO_addRoutesFromSpecification_INITVALIDATESPEC: string = 'Validate specification?';
-const INFO_addRoutesFromSpecification_INITPROVIDESTUBS: string = 'Do provide stubs?';
-const INFO_mapToRouter_MAPPED: string = 'Mapped method of path to controller:';
-
-const DEBUG_addRoutesFromSpecification_LOOPTAGS: string = 'Looping through these tags:';
-const DEBUG_addRoutesFromSpecification_LOOPOPERATIONS: string = 'Looping through these operations:';
-const DEBUG_addRoutesFromSpecification_TRYTOIMPORTCONTROLLER: string = 'Try to import controller with path:';
-const DEBUG_addRoutesFromSpecification_IMPORTCONTROLLER: string = 'Imported controller:';
-const DEBUG_addRoutesFromSpecification_IMPORTMODULENOTFOUND: string = 'Module of following controller not found:';
-const DEBUG_addRoutesFromSpecification_CONTROLLERFUNCTIONFOUND: string = 'Found function in controller:';
-const DEBUG_addRoutesFromSpecification_CONTROLLERFUNCTIONNOTFOUND: string = 'Function not found:';
-
-const WARN_addRoutesFromSpecification_IMPORTMODULENOTFOUND: string = 'Module not found and don\'t provide stub:';
-const WARN_addRoutesFromSpecification_CONTROLLERFUNCTIONNOTFOUND: string = 'Function not found and don\'t provide stub:';
+import * as CONST from './const.json';
+import * as STRINGS from './strings.json';
 
 /**
  * A child class of the koa-router. It extends the koa-router by some features that can be used with oas.
@@ -41,11 +18,12 @@ export class KoaOasRouter<StateT = any, CustomT = {}> extends Router {
 
     /**
      * Creates an instance of KoaOasRouter.
+     * @param {IRouterOptions} [opt]
      * @memberof KoaOasRouter
      */
     constructor(opt?: IRouterOptions) {
         super(opt);
-        if(opt && opt.logger) {
+        if (opt && opt.logger) {
             this.logger = opt.logger;
         } else {
             this.logger = new Logger();
@@ -61,78 +39,78 @@ export class KoaOasRouter<StateT = any, CustomT = {}> extends Router {
      * If a implementation is not found this function will add a stub for that. You can opt this out with opts.provideStubs.
      *
      * @param {Specification} specification
-     * @param {ReadSpecificationOpts} opts
+     * @param {AddFromSpecificationOpts} [opts]
      * @returns {Promise<any>}
      * @memberof KoaOasRouter
      */
-    public addRoutesFromSpecification(specification: Specification, opts? : ReadSpecificationOpts): Promise<any> {
+    public addRoutesFromSpecification(specification: Specification, opts?: AddFromSpecificationOpts): Promise<any> {
         const importPromises: Array<Promise<void>> = [];
         // TODO use oas-validator (opt-out?)
         if (!specification) {
-            this.logger.error(ERROR_addRoutesFromSpecification_SPECUNDEFINED);
-            Promise.reject(ERROR_addRoutesFromSpecification_SPECUNDEFINED);
+            this.logger.error(STRINGS.logger.error.addRoutesFromSpecification_SPECUNDEFINED);
+            Promise.reject(STRINGS.logger.error.addRoutesFromSpecification_SPECUNDEFINED);
         }
         if (!specification.paths) {
-            this.logger.error(ERROR_addRoutesFromSpecification_PATHUNDEFINED);
-            Promise.reject(ERROR_addRoutesFromSpecification_PATHUNDEFINED);
+            this.logger.error(STRINGS.logger.error.addRoutesFromSpecification_PATHUNDEFINED);
+            Promise.reject(STRINGS.logger.error.addRoutesFromSpecification_PATHUNDEFINED);
         }
 
         // Initialize default values
         opts = opts ? opts : {};
-        const controllerBasePath = (opts.controllerBasePath)? opts.controllerBasePath : CONTROLLER_BASE_PATH;
-        const validateSpecification = (opts.validateSpecification)? opts.validateSpecification : VALIDATE_SPECIFICATION;
-        const provideStubs = (opts.provideStubs)? opts.provideStubs : PROVIDE_STUBS;
-        this.logger.info(INFO_addRoutesFromSpecification_INITCONTROLLERBASEPATH, controllerBasePath);
-        this.logger.info(INFO_addRoutesFromSpecification_INITVALIDATESPEC, validateSpecification.toString());
-        this.logger.info(INFO_addRoutesFromSpecification_INITPROVIDESTUBS, provideStubs.toString());
-        
+        const controllerBasePath = (opts.controllerBasePath) ? opts.controllerBasePath : CONST.addRoutesFromSpecification.CONTROLLER_BASE_PATH;
+        const validateSpecification = (opts.validateSpecification) ? opts.validateSpecification : CONST.addRoutesFromSpecification.VALIDATE_SPECIFICATION;
+        const provideStubs = (opts.provideStubs) ? opts.provideStubs : CONST.addRoutesFromSpecification.PROVIDE_STUBS;
+        this.logger.info(STRINGS.logger.info.addRoutesFromSpecification_INITCONTROLLERBASEPATH, controllerBasePath);
+        this.logger.info(STRINGS.logger.info.addRoutesFromSpecification_INITVALIDATESPEC, validateSpecification.toString());
+        this.logger.info(STRINGS.logger.info.addRoutesFromSpecification_INITPROVIDESTUBS, provideStubs.toString());
+
         // Get the mapping tag -> operation (with operationId) -> {path, operationSpecification}
         const operationTagMapping: OperationTagMapping = this.mapOperationsByTag(specification.paths);
 
         // For each tag:
         const tags: string[] = Object.keys(operationTagMapping);
-        this.logger.debug(DEBUG_addRoutesFromSpecification_LOOPTAGS, tags.toString())
+        this.logger.debug(STRINGS.logger.debug.addRoutesFromSpecification_LOOPTAGS, tags.toString())
         tags.forEach((tagName: string) => {
             const operationMapping: OperationMapping = operationTagMapping[tagName];
 
-            this.logger.debug(DEBUG_addRoutesFromSpecification_TRYTOIMPORTCONTROLLER, path.join(controllerBasePath, tagName.toPascalCase()));
+            this.logger.debug(STRINGS.logger.debug.addRoutesFromSpecification_TRYTOIMPORTCONTROLLER, path.join(controllerBasePath, tagName.toPascalCase()));
             // Import the controller belonging to it
             importPromises.push(import(path.join(controllerBasePath, tagName.toPascalCase())).then((controller) => {
-                this.logger.debug(DEBUG_addRoutesFromSpecification_IMPORTCONTROLLER, tagName.toPascalCase());
+                this.logger.debug(STRINGS.logger.debug.addRoutesFromSpecification_IMPORTCONTROLLER, tagName.toPascalCase());
 
                 // For each operation (with operationId)
                 const operationIds: string[] = Object.keys(operationMapping);
-                this.logger.debug(DEBUG_addRoutesFromSpecification_LOOPOPERATIONS, operationIds.toString());
+                this.logger.debug(STRINGS.logger.debug.addRoutesFromSpecification_LOOPOPERATIONS, operationIds.toString());
                 operationIds.forEach((operationId: string) => {
                     const operation = operationMapping[operationId];
 
                     // get the function in controller and check if it is defined.
                     const operationInController = controller[operationId];
                     if (operationInController) {
-                        this.logger.debug(DEBUG_addRoutesFromSpecification_CONTROLLERFUNCTIONFOUND, operationId);
+                        this.logger.debug(STRINGS.logger.debug.addRoutesFromSpecification_CONTROLLERFUNCTIONFOUND, operationId);
                         // If it is defined: Map the funcion to the router by the path and the method.
                         this.mapToRouter(operation.path, operation.method, operationInController, tagName.toPascalCase());
                     } else {
-                        this.logger.debug(DEBUG_addRoutesFromSpecification_CONTROLLERFUNCTIONNOTFOUND, operationId);
+                        this.logger.debug(STRINGS.logger.debug.addRoutesFromSpecification_CONTROLLERFUNCTIONNOTFOUND, operationId);
                         // If it is not defined: create a stub if the flag is set.
                         if (provideStubs) {
                             this.createStubFromSpec({path: operation.path, method: operation.method});
                         } else {
-                            this.logger.warn(WARN_addRoutesFromSpecification_CONTROLLERFUNCTIONNOTFOUND, operationId);
+                            this.logger.warn(STRINGS.logger.warn.addRoutesFromSpecification_CONTROLLERFUNCTIONNOTFOUND, operationId);
                         }
                     }
                 })
             }).catch((error: NodeJS.ErrnoException) => {
                 // If the module belonging to a specific tag (controller) isn't found: create a stub if the flag is set.
                 if (error.code === 'MODULE_NOT_FOUND') {
-                    this.logger.debug(DEBUG_addRoutesFromSpecification_IMPORTMODULENOTFOUND, tagName.toPascalCase());
+                    this.logger.debug(STRINGS.logger.debug.addRoutesFromSpecification_IMPORTMODULENOTFOUND, tagName.toPascalCase());
                     if (provideStubs) {
                         this.createStubFromSpec(operationMapping);
                     } else {
-                        this.logger.warn(WARN_addRoutesFromSpecification_IMPORTMODULENOTFOUND, tagName.toPascalCase());
+                        this.logger.warn(STRINGS.logger.warn.addRoutesFromSpecification_IMPORTMODULENOTFOUND, tagName.toPascalCase());
                     }
                 } else {
-                    this.logger.error(ERROR_addRoutesFromSpecification_IMPORTERROR, error.message)
+                    this.logger.error(STRINGS.logger.error.addRoutesFromSpecification_IMPORTERROR, error.message)
                     throw error;
                 }
             }));
@@ -155,38 +133,38 @@ export class KoaOasRouter<StateT = any, CustomT = {}> extends Router {
         }
     }
 
-    private mapToRouter(path: string, method: PossibleMethod, controllerFunction: () => void, controllerName: string): void {
-        path = path.replace(/{/g, ':').replace(/}/g, '');
+    private mapToRouter(pathToMap: string, method: PossibleMethod, controllerFunction: () => void, controllerName: string): void {
+        pathToMap = pathToMap.replace(/{/g, ':').replace(/}/g, '');
         controllerName = controllerName ? controllerName : '';
         switch (method) {
             case 'get': {
-                this.get(path, controllerFunction);
-                this.logger.info(INFO_mapToRouter_MAPPED, method, path, controllerName);
+                this.get(pathToMap, controllerFunction);
+                this.logger.info(STRINGS.logger.info.mapToRouter_MAPPED, method, pathToMap, controllerName);
                 break;
             }
             case 'post': {
-                this.post(path, controllerFunction);
-                this.logger.info(INFO_mapToRouter_MAPPED, method, path, controllerName);
+                this.post(pathToMap, controllerFunction);
+                this.logger.info(STRINGS.logger.info.mapToRouter_MAPPED, method, pathToMap, controllerName);
                 break;
             }
             case 'put': {
-                this.put(path, controllerFunction);
-                this.logger.info(INFO_mapToRouter_MAPPED, method, path, controllerName);
+                this.put(pathToMap, controllerFunction);
+                this.logger.info(STRINGS.logger.info.mapToRouter_MAPPED, method, pathToMap, controllerName);
                 break;
             }
             case 'patch': {
-                this.patch(path, controllerFunction);
-                this.logger.info(INFO_mapToRouter_MAPPED, method, path, controllerName);
+                this.patch(pathToMap, controllerFunction);
+                this.logger.info(STRINGS.logger.info.mapToRouter_MAPPED, method, pathToMap, controllerName);
                 break;
             }
             case 'delete': {
-                this.delete(path, controllerFunction);
-                this.logger.info(INFO_mapToRouter_MAPPED, method, path, controllerName);
+                this.delete(pathToMap, controllerFunction);
+                this.logger.info(STRINGS.logger.info.mapToRouter_MAPPED, method, pathToMap, controllerName);
                 break;
             }
             default: {
-                this.logger.fatal(FATAL_mapToRouter_INVALIDMETHOD, method);
-                throw new Error(FATAL_mapToRouter_INVALIDMETHOD + ' ' + method);
+                this.logger.fatal(STRINGS.logger.fatal.mapToRouter_INVALIDMETHOD, method);
+                throw new Error(STRINGS.logger.fatal.mapToRouter_INVALIDMETHOD + ' ' + method);
             }
         }
         return;
@@ -197,9 +175,9 @@ export class KoaOasRouter<StateT = any, CustomT = {}> extends Router {
         const pathKeys = Object.keys(paths);
         pathKeys.map((pathKey) => {
             const apiPath = paths[pathKey];
-            const methods = <PossibleMethod[]> Object.keys(apiPath);
+            const methods = Object.keys(apiPath) as PossibleMethod[];
             methods.forEach((methodName: PossibleMethod) => {
-                const operation = <Operation> apiPath[methodName];
+                const operation = apiPath[methodName] as Operation;
 
                 if (!operation.tags || !operation.tags[0]) {
                     throw new Error('Method ' + methodName + ' in path ' + pathKey + ' has no tags!');
@@ -233,51 +211,110 @@ export class KoaOasRouter<StateT = any, CustomT = {}> extends Router {
     }
 }
 
+/**
+ * This is a extension of the Router.IRouterOptions.
+ *
+ * @export
+ * @interface IRouterOptions
+ * @property {Logger} [logger] A node-logger object
+ * @property {string} [logLevel] Specifies the log level ('fatal' | 'error' | 'warn' | 'info' | 'debug') will be ignored if logger is specified
+ * @extends {Router.IRouterOptions}
+ */
 export interface IRouterOptions extends Router.IRouterOptions {
-    logger: Logger;
-}
+    logger?: Logger;
+    logLevel?: string;
+};
 
-interface ReadSpecificationOpts {
+/**
+ * Options for adding the routes from a oas specification.
+ *
+ * @export
+ * @interface AddFromSpecificationOpts
+ * @property {string} [controllerBasePath] The base path in which the controllers can be found.
+ * @property {boolean} [validateSpecification] Specifies if the oas-validator should be used.
+ * @property {boolean} [provideStubs] Specifies if stubs should be provided.
+ */
+export interface AddFromSpecificationOpts {
     controllerBasePath?: string;
     validateSpecification?: boolean;
     provideStubs?: boolean;
-}
+};
 
 interface OperationTagMapping {
     [tag: string]: OperationMapping;
-}
+};
 
 interface OperationMapping {
     [operationId: string]: {
         path: string;
         method: PossibleMethod;
         operationSpec: Operation;
-    }
-}
+    };
+};
 
+/**
+ * The oas specification as js object. (Convert it via js-yaml)
+ *
+ * @export
+ * @interface Specification
+ * @property {Paths} paths Object that hold all the paths.
+ * @property {any} [x] Different other values.
+ */
 export interface Specification {
     paths: Paths;
     [x: string]: any;
-}
+};
 
-interface Paths {
-    [path: string]: Path;
-}
+/**
+ * Representation of the oas paths.
+ *
+ * @export
+ * @interface Paths
+ * @property {Path} pathName Index type! Specifies one path object of oas. PathName is a string that specifies the path.
+ */
+export interface Paths {
+    [path: string]: {
+        get?: Operation;
+        post?: Operation;
+        put?: Operation;
+        patch?: Operation;
+        delete?: Operation;
+    };
+};
 
-interface Path {
+/**
+ * Representation of the oas path.
+ *
+ * @export
+ * @interface Path
+ * @property {Operation} [get] Specifies the get operation of the oas path.
+ * @property {Operation} [post] Specifies the post operation of the oas path.
+ * @property {Operation} [put] Specifies the put operation of the oas path.
+ * @property {Operation} [patch] Specifies the patch operation of the oas path.
+ * @property {Operation} [delete] Specifies the delete operation of the oas path.
+ */
+export interface Path {
     get?: Operation;
     post?: Operation;
     put?: Operation;
     patch?: Operation;
     delete?: Operation;
-}
+};
 
-interface Operation {
+/**
+ * Representation of one operation.
+ *
+ * @export
+ * @interface Operation
+ * @property {string} operationId Specifies the oas operationId.
+ * @property {string[]} tags Specifies an array of oas tags.
+ * @property {string} [x] Additional values.
+ */
+export interface Operation {
     operationId: string;
     tags: string[];
     [x: string]: any;
-}
-
+};
 
 type PossibleMethod = 'get' | 'post' | 'put' | 'patch' | 'delete';
 
@@ -285,15 +322,15 @@ declare global {
     interface String {
         toPascalCase(): string;
     }
-}
+};
 
 /**
  * Convert a string to Pascal Case (removing non alphabetic characters).
- * 
+ *
  * @example
  * 'hello_world'.toPascalCase() // Will return `HelloWorld`.
  * 'fOO BAR'.toPascalCase() // Will return `FooBar`.
- * 
+ *
  * @returns {string}
  *   The Pascal Cased string.
  */
@@ -302,4 +339,4 @@ String.prototype.toPascalCase = function (): string {
     return (!begins) ? this.toString() : begins.map((word) => {
         return word.charAt(0).toLocaleUpperCase() + word.substr(1).toLowerCase();
     }).join('');
-}
+};

@@ -1,6 +1,5 @@
 import test from 'ava';
 import { KoaOasRouter } from './index';
-// import * as KoaRouter from 'koa-router';
 import { Logger } from 'logger';
 
 // test('Initialization without options', t => {
@@ -48,34 +47,4 @@ test('Stub of whole tag', async t => {
     const router = new KoaOasRouter({logger});
     await router.addRoutesFromSpecification(spec);
     t.true(true);
-})
-
-// let spec: Spec = {
-//     paths: {
-//         '/a': {
-//             get: {
-//                 operationId: 'get',
-//                 tags: ['a']
-//             },
-//             delete: {
-//                 operationId: 'delete',
-//                 tags: ['a']
-//             }
-//         },
-//         '/b': {
-//             put: {
-//                 operationId: 'put',
-//                 tags: ['b']
-//             }
-//         }
-//     }
-// };
-// let testString: string = 'get';
-
-// const c = new KoaOasRouter();
-// c.readSpec(spec);
-
-// console.log("TCL: spec: ", spec);
-// console.log("spec.paths: ", spec.paths);
-// console.log("spec.paths./a", spec.paths["/a"]);
-// console.log("spec.paths./a.get", spec.paths["/a"][testString]);
+});
