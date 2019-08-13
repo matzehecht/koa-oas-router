@@ -4,6 +4,7 @@ import { Logger } from 'logger';
 
 import * as CONST from './const.json';
 import * as STRINGS from './strings.json';
+import { Context } from 'koa';
 
 /**
  * A child class of the koa-router. It extends the koa-router by some features that can be used with oas.
@@ -105,7 +106,7 @@ export class KoaOasRouter<StateT = any, CustomT = {}> extends Router {
                 if (error.code === 'MODULE_NOT_FOUND') {
                     this.logger.debug(STRINGS.logger.debug.addRoutesFromSpecification_IMPORTMODULENOTFOUND, tagName.toPascalCase());
                     if (provideStubs) {
-                        this.createStubFromSpec(operationMapping);
+                        this.createStubFromSpec({operationMapping});
                     } else {
                         this.logger.warn(STRINGS.logger.warn.addRoutesFromSpecification_IMPORTMODULENOTFOUND, tagName.toPascalCase());
                     }
@@ -119,21 +120,25 @@ export class KoaOasRouter<StateT = any, CustomT = {}> extends Router {
         return Promise.all(importPromises);
     }
 
-    private createStubFromSpec(toStub: OperationMapping | {path: string, method: PossibleMethod}) {
+    private createStubFromSpec(toStub: {operationMapping: OperationMapping} | {path: string, method: PossibleMethod}) {
+        const dummyFunction = (ctx: Context, next: () => void) => {
+            ctx.body = {code: 501, message: 'Not Implemented'};
+            ctx.status = 501;
+        }
         if (!toStub) {
             throw new Error('Specification cannot be undefined');
         }
-        // TODO call routes mapping function
-        // this.mapToRouter(path, method, dummyFunction, 'Stub');
         if ('path' in toStub) {
-            // If only single operation
+            this.mapToRouter(toStub.path, toStub.method, dummyFunction, 'Stub');
         } else {
-            // If whole controller
-            // recursive?
+            const opertionIds = Object.keys(toStub.operationMapping);
+            opertionIds.forEach((operationId) => {
+                this.createStubFromSpec({path: toStub.operationMapping[operationId].path, method: toStub.operationMapping[operationId].method})
+            });
         }
     }
 
-    private mapToRouter(pathToMap: string, method: PossibleMethod, controllerFunction: () => void, controllerName: string): void {
+    private mapToRouter(pathToMap: string, method: PossibleMethod, controllerFunction: (ctx: Context, next: () => void) => void, controllerName: string): void {
         pathToMap = pathToMap.replace(/{/g, ':').replace(/}/g, '');
         controllerName = controllerName ? controllerName : '';
         switch (method) {
