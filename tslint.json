@@ -8,7 +8,6 @@
         "quotemark": [true, "single", "avoid-escape"],
         "trailing-comma": [false],
         "eofline": true,
-        "only-arrow-functions": [true],
         "space-before-function-paren": [false],
         "no-console": [true],
         "arrow-parens": false,
@@ -21,7 +20,8 @@
         "no-conditional-assignment": false,
         "no-var-requires": false,
         "max-classes-per-file": false,
-        "no-any": false
+        "no-any": false,
+        "semicolon": false
     },
     "rulesDirectory": []
 }
