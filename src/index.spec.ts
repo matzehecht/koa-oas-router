@@ -44,7 +44,7 @@ test('Stub of whole tag', async t => {
     //         }
     //     }
     // };
-    const spec = jsyaml.safeLoad(fs.readFileSync('./test/oas.yaml', 'utf8'))
+    const spec = jsyaml.safeLoad(fs.readFileSync('./tmp/oas.yaml', 'utf8'))
     const logger = new Logger();
     logger.setLevel('debug');
     const router = new KoaOasRouter({logger});
