@@ -16,7 +16,7 @@ steps:
 - task: Npm@1
   inputs:
     command: 'install'
-  displayName: 'npm publish'
+  displayName: 'npm install'
 
   # Node.js
 - task: Npm@1
