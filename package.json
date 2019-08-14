@@ -34,10 +34,12 @@
     "@babel/plugin-proposal-object-rest-spread": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
     "@babel/preset-typescript": "^7.3.3",
+    "@types/js-yaml": "^3.12.1",
     "@types/koa-router": "^7.0.42",
     "@types/logger": "0.0.0",
     "@types/node": "^12.7.1",
     "ava": "^2.2.0",
+    "js-yaml": "^3.13.1",
     "jsdoc-babel": "^0.5.0",
     "jsdoc-to-markdown": "^5.0.0",
     "rimraf": "^2.6.3",
@@ -56,6 +58,7 @@
   },
   "dependencies": {
     "koa-router": "^7.4.0",
-    "logger": "0.0.1"
+    "logger": "0.0.1",
+    "oas-validator": "^3.3.1"
   }
 }
