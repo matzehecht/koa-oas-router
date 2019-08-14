@@ -40,7 +40,7 @@
 | Name | Type | Description |
 | --- | --- | --- |
 | [logger] | <code>Logger</code> | <p>A node-logger object</p> |
-| [logLevel] | <code>string</code> | <p>Specifies the log level ('fatal' | 'error' | 'warn' | 'info' | 'debug') will be ignored if logger is specified</p> |
+| [logLevel] | <code>LogLevel</code> | <p>Specifies the log level ('fatal' | 'error' | 'warn' | 'info' | 'debug') will be ignored if logger is specified</p> |
 
 <a name="AddFromSpecificationOpts"></a>
 
@@ -50,11 +50,11 @@
 **Kind**: global interface  
 **Properties**
 
-| Name | Type | Description |
-| --- | --- | --- |
-| [controllerBasePath] | <code>string</code> | <p>The base path in which the controllers can be found.</p> |
-| [validateSpecification] | <code>boolean</code> | <p>Specifies if the oas-validator should be used.</p> |
-| [provideStubs] | <code>boolean</code> | <p>Specifies if stubs should be provided.</p> |
+| Name | Type | Default | Description |
+| --- | --- | --- | --- |
+| [controllerBasePath] | <code>string</code> | <code>&quot;&#x27;../controller&#x27;&quot;</code> | <p>The base path in which the controllers can be found.</p> |
+| [validateSpecification] | <code>boolean</code> | <code>true</code> | <p>Specifies if the oas-validator should be used.</p> |
+| [provideStubs] | <code>boolean</code> | <code>true</code> | <p>Specifies if stubs should be provided.</p> |
 
 <a name="Specification"></a>
 
