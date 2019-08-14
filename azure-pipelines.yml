@@ -13,6 +13,10 @@ steps:
   inputs:
     versionSpec: '10.x'
   displayName: 'Install Node.js'
+- task: Npm@1
+  inputs:
+    command: 'install'
+  displayName: 'npm publish'
 
   # Node.js
 - task: Npm@1
