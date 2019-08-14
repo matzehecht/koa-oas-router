@@ -1,7 +1,8 @@
 {
     "logger": {
         "fatal": {
-            "mapToRouter_INVALIDMETHOD": "Invalid method:"
+            "mapToRouter_INVALIDMETHOD": "Invalid method:",
+            "addRoutesFromSpecification_SPECNOTVALID": "Specification not valid"
         },
         "error": {
             "addRoutesFromSpecification_SPECUNDEFINED": "Specification not defined!",

@@ -8,6 +8,13 @@
 
 ### 🏠 [Homepage](https://github.com/maHecht/koa-oas-router#readme)
 
+## Features
+
+- Extends the normal `koa-router`.
+- Add routes on runtime from a oas-specification.
+- Validates the oas (opt-out possible).
+- Generates stubs for not implemented operations (opt-out possible).
+
 ## Install
 
 ```sh
@@ -16,17 +23,35 @@ npm i koa-oas-router --save
 
 ## Usage
 
+#### Javascript
 ```js
 const KoaOasRouter = require('koa-oas-router');
 
-const router = new KoaOasRouter.KoaOasRouter(opts)
+const jsyaml = require('js-yaml');
+const fs = require('fs');
+
+const specFile = fs.readFileSync('./tmp/oas.yaml', 'utf8');
+const spec = jsyaml.safeLoad(specFile);
+
+const router = new KoaOasRouter.KoaOasRouter(opts);
+router.addRoutesFromSpecification(spec);
 ```
 
+#### Typescript
 ```typescript
 import { KoaOasRouter } from 'koa-oas-router';
 
+import * as jsyaml from 'js-yaml';
+import * as fs from 'fs';
+
+const specFile = fs.readFileSync('./tmp/oas.yaml', 'utf8');
+const spec = jsyaml.safeLoad(specFile);
+
 const router = new KoaOasRouter(opts);
+router.addRoutesFromSpecification(spec);
 ```
+
+For more detailed information look at the [API](docs/API.md).
 
 ## API
 
