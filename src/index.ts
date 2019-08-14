@@ -6,6 +6,8 @@ import * as CONST from './const.json';
 import * as STRINGS from './strings.json';
 import { Context } from 'koa';
 
+const validator = require('oas-validator');
+
 /**
  * A child class of the koa-router. It extends the koa-router by some features that can be used with oas.
  *
@@ -45,17 +47,6 @@ export class KoaOasRouter<StateT = any, CustomT = {}> extends Router {
      * @memberof KoaOasRouter
      */
     public addRoutesFromSpecification(specification: Specification, opts?: AddFromSpecificationOpts): Promise<any> {
-        const importPromises: Array<Promise<void>> = [];
-        // TODO use oas-validator (opt-out?)
-        if (!specification) {
-            this.logger.error(STRINGS.logger.error.addRoutesFromSpecification_SPECUNDEFINED);
-            Promise.reject(STRINGS.logger.error.addRoutesFromSpecification_SPECUNDEFINED);
-        }
-        if (!specification.paths) {
-            this.logger.error(STRINGS.logger.error.addRoutesFromSpecification_PATHUNDEFINED);
-            Promise.reject(STRINGS.logger.error.addRoutesFromSpecification_PATHUNDEFINED);
-        }
-
         // Initialize default values
         opts = opts ? opts : {};
         const controllerBasePath = (opts.controllerBasePath) ? opts.controllerBasePath : CONST.addRoutesFromSpecification.CONTROLLER_BASE_PATH;
@@ -64,6 +55,23 @@ export class KoaOasRouter<StateT = any, CustomT = {}> extends Router {
         this.logger.info(STRINGS.logger.info.addRoutesFromSpecification_INITCONTROLLERBASEPATH, controllerBasePath);
         this.logger.info(STRINGS.logger.info.addRoutesFromSpecification_INITVALIDATESPEC, validateSpecification.toString());
         this.logger.info(STRINGS.logger.info.addRoutesFromSpecification_INITPROVIDESTUBS, provideStubs.toString());
+
+        if (validateSpecification) {
+            if (!validator.validateSync(specification, {})) {
+                throw new Error(STRINGS.logger.fatal.addRoutesFromSpecification_SPECNOTVALID);
+            }
+        }
+
+        const importPromises: Array<Promise<void>> = [];
+
+        if (!specification) {
+            this.logger.error(STRINGS.logger.error.addRoutesFromSpecification_SPECUNDEFINED);
+            Promise.reject(STRINGS.logger.error.addRoutesFromSpecification_SPECUNDEFINED);
+        }
+        if (!specification.paths) {
+            this.logger.error(STRINGS.logger.error.addRoutesFromSpecification_PATHUNDEFINED);
+            Promise.reject(STRINGS.logger.error.addRoutesFromSpecification_PATHUNDEFINED);
+        }
 
         // Get the mapping tag -> operation (with operationId) -> {path, operationSpecification}
         const operationTagMapping: OperationTagMapping = this.mapOperationsByTag(specification.paths);
@@ -235,9 +243,9 @@ export interface IRouterOptions extends Router.IRouterOptions {
  *
  * @export
  * @interface AddFromSpecificationOpts
- * @property {string} [controllerBasePath] The base path in which the controllers can be found.
- * @property {boolean} [validateSpecification] Specifies if the oas-validator should be used.
- * @property {boolean} [provideStubs] Specifies if stubs should be provided.
+ * @property {string} [controllerBasePath = '../controller'] The base path in which the controllers can be found.
+ * @property {boolean} [validateSpecification = true] Specifies if the oas-validator should be used.
+ * @property {boolean} [provideStubs = true] Specifies if stubs should be provided.
  */
 export interface AddFromSpecificationOpts {
     controllerBasePath?: string;
