@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as Router from 'koa-router';
-import { Logger } from 'logger';
+import { Logger, LogLevel } from 'logger';
 
 import * as CONST from './const.json';
 import * as STRINGS from './strings.json';
@@ -26,6 +26,9 @@ export class KoaOasRouter<StateT = any, CustomT = {}> extends Router {
         super(opt);
         if (opt && opt.logger) {
             this.logger = opt.logger;
+        } else if (opt && opt.logLevel) {
+            this.logger = new Logger();
+            this.logger.setLevel(opt.logLevel);
         } else {
             this.logger = new Logger();
             this.logger.setLevel('error');
@@ -222,12 +225,12 @@ export class KoaOasRouter<StateT = any, CustomT = {}> extends Router {
  * @export
  * @interface IRouterOptions
  * @property {Logger} [logger] A node-logger object
- * @property {string} [logLevel] Specifies the log level ('fatal' | 'error' | 'warn' | 'info' | 'debug') will be ignored if logger is specified
+ * @property {LogLevel} [logLevel] Specifies the log level ('fatal' | 'error' | 'warn' | 'info' | 'debug') will be ignored if logger is specified
  * @extends {Router.IRouterOptions}
  */
 export interface IRouterOptions extends Router.IRouterOptions {
     logger?: Logger;
-    logLevel?: string;
+    logLevel?: LogLevel;
 };
 
 /**
