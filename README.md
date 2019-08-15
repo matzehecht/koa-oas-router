@@ -1,6 +1,6 @@
 # Welcome to koa-oas-router 👋
 ![Version](https://img.shields.io/npm/v/koa-oas-router.svg)
-[![Documentation](https://img.shields.io/badge/documentation-yes-brightgreen.svg)](https://github.com/maHecht/koa-oas-router#readme)
+[![Documentation](https://img.shields.io/badge/documentation-yes-brightgreen.svg)](https://github.com/maHecht/koa-oas-router#docs)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/maHecht/koa-oas-router/graphs/commit-activity)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/maHecht/koa-oas-router/blob/master/LICENSE)
 
@@ -53,7 +53,7 @@ router.addRoutesFromSpecification(spec);
 
 For more detailed information look at the [API](docs/API.md).
 
-## API
+## Docs
 
 [API](docs/API.md)
 
