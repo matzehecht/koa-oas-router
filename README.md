@@ -53,7 +53,7 @@ router.addRoutesFromSpecification(spec);
 
 For more detailed information look at the [API](docs/API.md).
 
-## API
+## Docs
 
 [API](docs/API.md)
 
