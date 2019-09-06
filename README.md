@@ -1,6 +1,6 @@
 # Welcome to koa-oas-router 👋
-![Version](https://img.shields.io/npm/v/koa-oas-router.svg)
-[![Documentation](https://img.shields.io/badge/documentation-yes-brightgreen.svg)](https://github.com/maHecht/koa-oas-router#docs)
+[![Version](https://img.shields.io/npm/v/koa-oas-router.svg)](https://www.npmjs.com/package/koa-oas-router)
+[![Documentation](https://img.shields.io/badge/documentation-yes-brightgreen.svg)](https://github.com/maHecht/koa-oas-router#readme)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/maHecht/koa-oas-router/graphs/commit-activity)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/maHecht/koa-oas-router/blob/master/LICENSE)
 
