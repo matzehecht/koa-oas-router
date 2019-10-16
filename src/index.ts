@@ -1,6 +1,7 @@
 import * as path from 'path';
 import * as Router from 'koa-router';
-import { Logger, LogLevel } from 'logger';
+// import { Logger, LogLevel } from 'logger';
+const Logger = require('simple-node-logger');
 
 import * as CONST from './const.json';
 import * as STRINGS from './strings.json';
@@ -17,7 +18,7 @@ const validator = require('oas-validator');
  */
 export class KoaOasRouter<StateT = any, CustomT = {}> extends Router {
 
-    private logger: Logger;
+    private logger = Logger.createSimpleLogger();
 
     /**
      * Creates an instance of KoaOasRouter.
@@ -29,10 +30,8 @@ export class KoaOasRouter<StateT = any, CustomT = {}> extends Router {
         if (opt && opt.logger) {
             this.logger = opt.logger;
         } else if (opt && opt.logLevel) {
-            this.logger = new Logger();
             this.logger.setLevel(opt.logLevel);
         } else {
-            this.logger = new Logger();
             this.logger.setLevel('error');
         }
     }
@@ -237,8 +236,8 @@ export class KoaOasRouter<StateT = any, CustomT = {}> extends Router {
  * @extends {Router.IRouterOptions}
  */
 export interface IRouterOptions extends Router.IRouterOptions {
-    logger?: Logger;
-    logLevel?: LogLevel;
+    logger?: any;
+    logLevel?: 'trace' | 'debug' | 'info' | 'warn' | 'error' | 'fatal';
 };
 
 /**

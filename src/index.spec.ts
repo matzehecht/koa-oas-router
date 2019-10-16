@@ -1,6 +1,6 @@
 import test from 'ava';
 import { KoaOasRouter } from './index';
-import { Logger } from 'logger';
+// import { Logger } from 'logger';
 import * as jsyaml from 'js-yaml';
 import * as fs from 'fs';
 
@@ -44,10 +44,8 @@ test('Stub of whole tag', async t => {
     //         }
     //     }
     // };
-    const spec = jsyaml.safeLoad(fs.readFileSync('./tmp/oas.yaml', 'utf8'))
-    const logger = new Logger();
-    logger.setLevel('debug');
-    const router = new KoaOasRouter({logger});
+    const spec = jsyaml.safeLoad(fs.readFileSync('./tmp/oas.yaml', 'utf8'));
+    const router = new KoaOasRouter();
     await router.addRoutesFromSpecification(spec);
     t.true(true);
 });
