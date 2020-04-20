@@ -57,8 +57,8 @@
     ]
   },
   "dependencies": {
-    "koa-router": "^7.4.0",
-    "oas-validator": "^3.3.1",
+    "koa-router": "^8.0.8",
+    "oas-validator": "^4.0.3",
     "simple-node-logger": "^18.12.23"
   }
 }
