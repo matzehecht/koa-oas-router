@@ -1,8 +1,9 @@
+import { spec } from './testhelper';
 import test from 'ava';
 import { KoaOasRouter } from './index';
 // import { Logger } from 'logger';
-import * as jsyaml from 'js-yaml';
-import * as fs from 'fs';
+// import * as jsyaml from 'js-yaml';
+// import * as fs from 'fs';
 
 // test('Initialization without options', t => {
 //     const router = JSON.parse(JSON.stringify(new KoaOasRouter()));
@@ -18,33 +19,7 @@ import * as fs from 'fs';
 // });
 
 test('Stub of whole tag', async t => {
-    // const spec = {
-    //     paths: {
-    //         '/a': {
-    //             get: {
-    //                 operationId: 'get',
-    //                 tags: ['a']
-    //             },
-    //             delete: {
-    //                 operationId: 'delete',
-    //                 tags: ['c']
-    //             }
-    //         },
-    //         '/b': {
-    //             put: {
-    //                 operationId: 'put',
-    //                 tags: ['b']
-    //             }
-    //         },
-    //         '/post': {
-    //             post: {
-    //                 operationId: 'post',
-    //                 tags: ['a']
-    //             }
-    //         }
-    //     }
-    // };
-    const spec = jsyaml.safeLoad(fs.readFileSync('./tmp/oas.yaml', 'utf8'));
+    // const spec = jsyaml.safeLoad(fs.readFileSync('./tmp/oas.yaml', 'utf8'));
     const router = new KoaOasRouter();
     await router.addRoutesFromSpecification(spec);
     t.true(true);
