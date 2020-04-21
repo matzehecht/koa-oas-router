@@ -43,12 +43,13 @@ export class KoaOasRouter<StateT = any, CustomT = {}> extends Router {
      * The specification will be validated by oas-validator. You can opt this out with opts.validateSpecification.
      * If a implementation is not found this function will add a stub for that. You can opt this out with opts.provideStubs.
      *
+     * @async
      * @param {Specification} specification
      * @param {AddFromSpecificationOpts} [opts]
      * @returns {Promise<any>}
      * @memberof KoaOasRouter
      */
-    public addRoutesFromSpecification(specification: Specification, opts?: AddFromSpecificationOpts): Promise<any> {
+    public async addRoutesFromSpecification(specification: Specification, opts?: AddFromSpecificationOpts): Promise<any> {
         // Initialize default values
         opts = opts ? opts : {};
         const controllerBasePath = (opts.controllerBasePath) ? opts.controllerBasePath : CONST.addRoutesFromSpecification.CONTROLLER_BASE_PATH;
@@ -59,7 +60,7 @@ export class KoaOasRouter<StateT = any, CustomT = {}> extends Router {
         this.logger.info(STRINGS.logger.info.addRoutesFromSpecification_INITPROVIDESTUBS, provideStubs.toString());
 
         if (validateSpecification) {
-            if (!validator.validateSync(specification, {})) {
+            if (!(await validator.validate(specification, {}))?.valid) {
                 throw new Error(STRINGS.logger.fatal.addRoutesFromSpecification_SPECNOTVALID);
             }
         }
