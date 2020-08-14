@@ -1,6 +1,6 @@
 {
   "name": "koa-oas-router",
-  "version": "1.2.2",
+  "version": "0.0.0-development",
   "description": "This module extends the koa-router with some features usable with oas.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -9,7 +9,8 @@
     "test": "ava",
     "start:test": "ts-node tmp/test.js",
     "prebuild": "npm run test",
-    "build": "rimraf ./dist && tsc"
+    "build": "rimraf ./dist && tsc",
+    "semantic-release": "semantic-release"
   },
   "repository": {
     "type": "git",
@@ -42,6 +43,7 @@
     "jsdoc-babel": "^0.5.0",
     "jsdoc-to-markdown": "^5.0.3",
     "rimraf": "^2.7.1",
+    "semantic-release": "^17.1.1",
     "ts-node": "^8.9.0",
     "tslint": "^5.20.1",
     "typescript": "^3.8.3"
