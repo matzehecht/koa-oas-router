@@ -9,12 +9,11 @@
     "test": "ava",
     "start:test": "ts-node tmp/test.js",
     "prebuild": "npm run test",
-    "build": "rimraf ./dist && tsc",
-    "prepublish": "npm run build"
+    "build": "rimraf ./dist && tsc"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/maHecht/koa-oas-router.git"
+    "url": "https://github.com/matzehecht/koa-oas-router.git"
   },
   "keywords": [
     "koa",
@@ -24,9 +23,9 @@
   "author": "Matthias Hecht",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/maHecht/koa-oas-router/issues"
+    "url": "https://github.com/matzehecht/koa-oas-router/issues"
   },
-  "homepage": "https://github.com/maHecht/koa-oas-router#readme",
+  "homepage": "https://github.com/matzehecht/koa-oas-router#readme",
   "devDependencies": {
     "@babel/cli": "^7.8.4",
     "@babel/core": "^7.9.0",
