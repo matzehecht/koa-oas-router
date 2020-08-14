@@ -32,17 +32,10 @@ jobs:
       run: npm install
     - name: build docs
       run: npm run doc:api
-    - name: Push Wiki Changes
-      uses: Andrew-Chen-Wang/github-wiki-action@v2
-      env:
-        WIKI_DIR: docs/
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        GH_MAIL: ${{ secrets.YOUR_EMAIL }}
-        GH_NAME: ${{ github.repository_owner }}
-  publishNPM:
+  publish:
     runs-on: ubuntu-latest
     name: Publish to npm
-    needs: [test, publishWiki]
+    needs: [test, compileDocs]
     steps:
       - name: Checkout
         uses: actions/checkout@v1
