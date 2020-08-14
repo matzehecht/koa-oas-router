@@ -7,8 +7,30 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    name: Test
+    strategy:
+      matrix:
+        node-version: [10.x, 11.x, 12.x, 13.x, 14.x]
     steps:
-      - uses: ./.github/workflows/test.yml
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: Get npm cache directory
+      id: npm-cache
+      run: |
+        echo "::set-output name=dir::$(npm config get cache)"
+    - uses: actions/cache@v2
+      with:
+        path: ${{ steps.npm-cache.outputs.dir }}
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+    - name: install
+      run: npm install
+    - name: test
+      run: npm test
   compileDocs:
     runs-on: ubuntu-latest
     name: Compile docs
@@ -32,10 +54,17 @@ jobs:
       run: npm install
     - name: build docs
       run: npm run doc:api
-  publish:
+    - name: Push Wiki Changes
+      uses: Andrew-Chen-Wang/github-wiki-action@v2
+      env:
+        WIKI_DIR: docs/
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GH_MAIL: ${{ secrets.YOUR_EMAIL }}
+        GH_NAME: ${{ github.repository_owner }}
+  publishNPM:
     runs-on: ubuntu-latest
     name: Publish to npm
-    needs: [test, compileDocs]
+    needs: [test, publishWiki]
     steps:
       - name: Checkout
         uses: actions/checkout@v1
