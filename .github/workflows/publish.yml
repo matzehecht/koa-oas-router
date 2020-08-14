@@ -1,0 +1,35 @@
+name: Publish
+
+on:
+  push:
+    branches: [ feat/7-add-ci ]
+
+jobs:
+  publishWiki:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v1
+      with:
+        node-version: 12
+        registry-url: https://registry.npmjs.org/
+    - name: Get npm cache directory
+      id: npm-cache
+      run: |
+        echo "::set-output name=dir::$(npm config get cache)"
+    - uses: actions/cache@v2
+      with:
+        path: ${{ steps.npm-cache.outputs.dir }}
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+    - name: install
+      run: npm install
+    - name: build docs
+      run: npm run doc:api
+    - name: Publish to GitHub Wiki
+      uses: SwiftDocOrg/github-wiki-publish-action@1.0.0
+      with:
+        path: ./docs
+      env:
+        GITHUB_PERSONAL_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
