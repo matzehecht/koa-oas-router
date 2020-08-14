@@ -27,9 +27,10 @@ jobs:
       run: npm install
     - name: build docs
       run: npm run doc:api
-    - name: Publish to GitHub Wiki
-      uses: SwiftDocOrg/github-wiki-publish-action@1.0.0
-      with:
-        path: ./docs
+    - name: Push Wiki Changes
+      uses: Andrew-Chen-Wang/github-wiki-action@v2
       env:
-        GITHUB_PERSONAL_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        WIKI_DIR: docs/
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GH_MAIL: ${{ secrets.YOUR_EMAIL }}
+        GH_NAME: ${{ github.repository_owner }}
