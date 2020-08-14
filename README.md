@@ -51,7 +51,7 @@ For more detailed information look at the [API](https://github.com/matzehecht/ko
 
 ## Docs
 
-[API]([docs/API.md](https://github.com/matzehecht/koa-oas-router/wiki/API))
+[API](https://github.com/matzehecht/koa-oas-router/wiki/API)
 
 ## Run tests
 
