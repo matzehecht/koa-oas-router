@@ -6,6 +6,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    name: Test
     strategy:
       matrix:
         node-version: [10.x, 11.x, 12.x, 13.x, 14.x]

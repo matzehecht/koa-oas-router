@@ -2,11 +2,16 @@ name: Publish
 
 on:
   push:
-    branches: [ feat/7-add-ci ]
+    branches: [ master ]
 
 jobs:
-  publishWiki:
+  test:
     runs-on: ubuntu-latest
+    steps:
+      - uses: ./.github/workflows/test.yml
+  compileDocs:
+    runs-on: ubuntu-latest
+    name: Compile docs
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v1
