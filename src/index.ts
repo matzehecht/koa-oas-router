@@ -1,4 +1,5 @@
 import * as path from 'path';
+import { IRouterOptions } from 'koa-router';
 import * as Router from 'koa-router';
 
 import * as CONST from './const.json';
@@ -18,10 +19,10 @@ export class KoaOasRouter<StateT = any, CustomT = {}> extends Router {
 
     /**
      *Creates an instance of KoaOasRouter.
-     * @param {Router.IRouterOptions} [opt]
+     * @param {IRouterOptions} [opt]
      * @memberof KoaOasRouter
      */
-    constructor(opt?: Router.IRouterOptions) {
+    constructor(opt?: IRouterOptions) {
         super(opt);
     }
 
@@ -192,6 +193,8 @@ export class KoaOasRouter<StateT = any, CustomT = {}> extends Router {
         return mapping;
     }
 }
+
+export { IRouterOptions } from 'koa-router';
 
 /**
  * Options for adding the routes from a oas specification.
