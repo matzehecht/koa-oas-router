@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "doc:api": "jsdoc2md --files ./src/**/*.ts --configure ./jsdoc2md.json > ./docs/API.md",
+    "pretest": "npm run build",
     "test": "ava",
     "start:test": "ts-node tmp/test.js",
     "prebuild": "npm run test",
