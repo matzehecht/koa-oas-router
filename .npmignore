@@ -1,6 +1,8 @@
 node_modules/
+dist/tests/
 src/
 .gitignore
+.github
 README.md 
 tsconfig.json
 tslint.json
