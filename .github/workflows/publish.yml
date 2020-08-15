@@ -31,40 +31,10 @@ jobs:
       run: npm install
     - name: test
       run: npm test
-  compileDocs:
-    runs-on: ubuntu-latest
-    name: Compile docs
-    steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v1
-      with:
-        node-version: 12
-        registry-url: https://registry.npmjs.org/
-    - name: Get npm cache directory
-      id: npm-cache
-      run: |
-        echo "::set-output name=dir::$(npm config get cache)"
-    - uses: actions/cache@v2
-      with:
-        path: ${{ steps.npm-cache.outputs.dir }}
-        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-node-
-    - name: install
-      run: npm install
-    - name: build docs
-      run: npm run doc:api
-    - name: Push Wiki Changes
-      uses: Andrew-Chen-Wang/github-wiki-action@v2
-      env:
-        WIKI_DIR: docs/
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        GH_MAIL: ${{ secrets.YOUR_EMAIL }}
-        GH_NAME: ${{ github.repository_owner }}
   publishNPM:
     runs-on: ubuntu-latest
     name: Publish to npm
-    needs: [test, compileDocs]
+    needs: [test]
     steps:
       - name: Checkout
         uses: actions/checkout@v1
@@ -74,6 +44,8 @@ jobs:
           node-version: 14
       - name: Install dependencies
         run: npm ci
+      - name: build
+        run: npm run build
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
