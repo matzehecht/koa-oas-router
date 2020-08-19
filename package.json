@@ -7,7 +7,6 @@
   "scripts": {
     "pretest": "npm run build",
     "test": "ava",
-    "start:test": "ts-node tmp/test.js",
     "build": "rimraf ./dist && tsc",
     "semantic-release": "semantic-release"
   },
