@@ -6,6 +6,10 @@ import * as CONST from './const.json';
 import * as STRINGS from './strings.json';
 import { Context } from 'koa';
 
+/**
+ *
+ * @protected
+ */
 const validator = require('oas-validator');
 
 /**
@@ -284,10 +288,22 @@ export type mapControllerBy =
    */
   | 'PATH';
 
+/**
+ * Maps the operation to the controller where it should be implemented
+ *
+ * @internal
+ * @interface OperationControllerMapping
+ */
 interface OperationControllerMapping {
   [tagOrPath: string]: OperationMapping;
 }
 
+/**
+ * Maps the operationId to the operation
+ *
+ * @internal
+ * @interface OperationMapping
+ */
 interface OperationMapping {
   [operationId: string]: {
     path: string;
@@ -356,7 +372,18 @@ export interface Operation {
   [x: string]: any;
 }
 
+
+/**
+ * @internal
+ *
+ * @namespace global
+ */
 declare global {
+  /**
+   * @internal
+   *
+   * @interface String
+   */
   interface String {
     toPascalCase(): string;
   }
@@ -371,6 +398,7 @@ declare global {
  *
  * @returns {string}
  *   The Pascal Cased string.
+ * @internal
  */
 String.prototype.toPascalCase = function (): string {
   const begins = this.toString().match(/[a-z]+/gi);
