@@ -7,7 +7,7 @@
 
 > This module extends the koa-router with some features usable with oas.
 
-### 🏠 [Homepage](https://github.com/matzehecht/koa-oas-router#readme)
+### 🏠 [Homepage](https://github.com/matzehecht/koa-oas-router)
 
 ## Features
 
@@ -48,11 +48,11 @@ const router = new KoaOasRouter(opts);
 router.addRoutesFromSpecification(spec);
 ```
 
-For more detailed information look at the [API](https://github.com/matzehecht/koa-oas-router/wiki/API).
+For more detailed information look at the [API](https://github.com/matzehecht/koa-oas-router/wiki/README.md).
 
 ## Docs
 
-[API](https://github.com/matzehecht/koa-oas-router/wiki/API)
+[API](https://github.com/matzehecht/koa-oas-router/wiki/README.md)
 
 ## Run tests
 
