@@ -3,6 +3,7 @@
         "CONTROLLER_BASE_PATH": "../controller",
         "VALIDATE_SPECIFICATION":  true,
         "PROVIDE_STUBS": true,
-        "MAP_CONTROLLER_BY": "TAG"
+        "MAP_CONTROLLER_BY": "TAG",
+        "FALLBACK_CONTROLLER_TO_INDEX": true
     }
 }
