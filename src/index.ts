@@ -48,6 +48,8 @@ export class KoaOasRouter<StateT = any, CustomT = {}> extends Router {
     const validateSpecification = opts?.validateSpecification || CONST.addRoutesFromSpecification.VALIDATE_SPECIFICATION;
     const provideStubs = opts?.provideStubs || CONST.addRoutesFromSpecification.PROVIDE_STUBS;
     const mapControllerBy: mapControllerBy = opts?.mapControllerBy || (CONST.addRoutesFromSpecification.MAP_CONTROLLER_BY as mapControllerBy);
+    const fallbackControllerToIndex =
+      opts && typeof opts.fallbackControllerToIndex === 'boolean' ? opts.fallbackControllerToIndex : CONST.addRoutesFromSpecification.FALLBACK_CONTROLLER_TO_INDEX;
 
     if (validateSpecification) {
       if (!(await validator.validate(specification, {}))?.valid) {
@@ -68,7 +70,7 @@ export class KoaOasRouter<StateT = any, CustomT = {}> extends Router {
     let operationControllerMapping: OperationControllerMapping = {};
     switch (mapControllerBy) {
       case 'TAG':
-        operationControllerMapping = this.mapOperationsByTag(specification.paths);
+        operationControllerMapping = this.mapOperationsByTag(specification.paths, fallbackControllerToIndex);
         break;
       case 'PATH':
         operationControllerMapping = this.mapOperationsByPath(specification.paths);
@@ -82,13 +84,10 @@ export class KoaOasRouter<StateT = any, CustomT = {}> extends Router {
 
       // Import the controller belonging to it
       importPromises.push(
-        import(path.resolve(path.join(controllerBasePath, controllerName.toPascalCase())))
+        import(path.resolve(path.join(controllerBasePath, controllerName === 'index' ? controllerName.toPascalCase() : 'index')))
           .then((controller) => {
             // For each operation (with operationId)
-            const operationIds: string[] = Object.keys(operationMapping);
-            operationIds.forEach((operationId: string) => {
-              const operation = operationMapping[operationId];
-
+            Object.entries(operationMapping).forEach(([operationId, operation]: [string, Operation]) => {
               // get the function in controller and check if it is defined.
               const operationInController = controller[operationId];
               if (operationInController) {
@@ -145,23 +144,18 @@ export class KoaOasRouter<StateT = any, CustomT = {}> extends Router {
     return;
   }
 
-  private mapOperationsByTag(paths: Paths): OperationControllerMapping {
+  private mapOperationsByTag(paths: Paths, fallbackControllerToIndex: boolean): OperationControllerMapping {
     const mapping: OperationControllerMapping = {};
-    const pathKeys = Object.keys(paths);
-    pathKeys.forEach((pathKey) => {
-      const apiPath = paths[pathKey];
-      const methods = Object.keys(apiPath);
-      methods.forEach((methodName) => {
-        const operation = apiPath[methodName] as Operation;
-
-        if (!operation.tags || !operation.tags[0]) {
-          throw new Error('Method ' + methodName + ' in path ' + pathKey + ' has no tags!');
+    Object.entries(paths).forEach(([path, pathObj]: [string, Path]) => {
+      Object.entries(pathObj).forEach(([method, operation]: [string, Operation]) => {
+        if ((!operation.tags || !operation.tags[0]) && !fallbackControllerToIndex) {
+          throw new Error('Method ' + method + ' in path ' + path + ' has no tags!');
         }
         if (!operation.operationId) {
-          throw new Error('Method ' + methodName + ' in path ' + pathKey + ' has no operationId!');
+          throw new Error('Method ' + method + ' in path ' + path + ' has no operationId!');
         }
 
-        const tag = operation.tags[0];
+        const tag = (operation.tags && operation.tags[0]) || 'index';
         if (mapping[tag]) {
           // If tag is already mapped:
           if (mapping[tag][operation.operationId]) {
@@ -170,16 +164,16 @@ export class KoaOasRouter<StateT = any, CustomT = {}> extends Router {
           } else {
             // Add the operation by it's Id to the tag in the mapping. As values add the path and the specification.
             mapping[tag][operation.operationId] = {
-              path: pathKey,
-              method: methodName,
+              path,
+              method,
               operationSpec: operation,
             };
           }
         } else {
           mapping[tag] = {};
           mapping[tag][operation.operationId] = {
-            path: pathKey,
-            method: methodName,
+            path,
+            method,
             operationSpec: operation,
           };
         }
@@ -234,6 +228,8 @@ export { IRouterOptions } from 'koa-router';
  * @property {string} [controllerBasePath = '../controller'] The base path in which the controllers can be found.
  * @property {boolean} [validateSpecification = true] Specifies if the oas-validator should be used.
  * @property {boolean} [provideStubs = true] Specifies if stubs should be provided.
+ * @property {mapControllerBy} [mapControllerBy = 'TAG'] Specifies how to map the controller.
+ * @property {boolean} [fallbackControllerToIndex = true] Should the index module (index.ts or index.js) be used as fallback?
  */
 export interface AddFromSpecificationOpts {
   /**
@@ -265,6 +261,13 @@ export interface AddFromSpecificationOpts {
    * @default 'TAG'
    */
   mapControllerBy?: mapControllerBy;
+  /**
+   * Should the index module (index.ts or index.js) be used as fallback?
+   *
+   * @type {boolean}
+   * @default true
+   */
+  fallbackControllerToIndex?: boolean;
 }
 
 /**
@@ -371,7 +374,6 @@ export interface Operation {
   tags?: string[];
   [x: string]: any;
 }
-
 
 /**
  * @internal

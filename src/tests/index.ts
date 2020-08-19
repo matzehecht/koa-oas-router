@@ -27,7 +27,7 @@ test('Initialization with options', t => {
     t.true(router.match('/b/a', 'get').path.length > 0, 'KoaRouter should have a prefix');
 });
 
-test('Add routes by TAG and operationId', async t => {
+test('Add routes by TAG (with fallback) and operationId', async t => {
     const router = new KoaOasRouter();
     await t.notThrowsAsync(router.addRoutesFromSpecification(SPEC_WITH_TAG_AND_OPERATION_ID), 'Should not throw');
     t.truthy(router.match('/a', 'get').path.find(p => p.methods.includes('GET')), 'GET /a should be included');
@@ -35,9 +35,22 @@ test('Add routes by TAG and operationId', async t => {
     t.truthy(router.match('/b', 'put').path.find(p => p.methods.includes('PUT')), 'PUT /b should be included');
     t.truthy(router.match('/post', 'post').path.find(p => p.methods.includes('POST')), 'POST /post should be included');
 
-    await t.throwsAsync(router.addRoutesFromSpecification(SPEC_WITH_OPERATION_ID_WITHOUT_TAG), { message: /^Method.*in path.*has no tags!$/}, 'Should throw that a method has no tags');
+    await t.notThrowsAsync(router.addRoutesFromSpecification(SPEC_WITH_OPERATION_ID_WITHOUT_TAG), 'Should not throw');
     await t.throwsAsync(router.addRoutesFromSpecification(SPEC_WITH_TAG_WITHOUT_OPERATION_ID), { message: /^Method.*in path.*has no operationId!$/}, 'Should throw that a method has no operationId');
-    await t.throwsAsync(router.addRoutesFromSpecification(SPEC_WITHOUT_TAG_AND_OPERATION_ID), { message: /^Method.*in path.*has no tags!$/}, 'Should throw that a method has no tags');
+    await t.throwsAsync(router.addRoutesFromSpecification(SPEC_WITHOUT_TAG_AND_OPERATION_ID), { message: /^Method.*in path.*has no operationId!$/}, 'Should throw that a method has no operationId');
+});
+
+test('Add routes by TAG (without fallback) and operationId', async t => {
+    const router = new KoaOasRouter();
+    await t.notThrowsAsync(router.addRoutesFromSpecification(SPEC_WITH_TAG_AND_OPERATION_ID, {fallbackControllerToIndex: false}), 'Should not throw');
+    t.truthy(router.match('/a', 'get').path.find(p => p.methods.includes('GET')), 'GET /a should be included');
+    t.truthy(router.match('/a', 'delete').path.find(p => p.methods.includes('DELETE')), 'DELETE /a should be included');
+    t.truthy(router.match('/b', 'put').path.find(p => p.methods.includes('PUT')), 'PUT /b should be included');
+    t.truthy(router.match('/post', 'post').path.find(p => p.methods.includes('POST')), 'POST /post should be included');
+
+    await t.throwsAsync(router.addRoutesFromSpecification(SPEC_WITH_OPERATION_ID_WITHOUT_TAG, {fallbackControllerToIndex: false}), { message: /^Method.*in path.*has no tags!$/}, 'Should throw that a method has no tags');
+    await t.throwsAsync(router.addRoutesFromSpecification(SPEC_WITH_TAG_WITHOUT_OPERATION_ID, {fallbackControllerToIndex: false}), { message: /^Method.*in path.*has no operationId!$/}, 'Should throw that a method has no operationId');
+    await t.throwsAsync(router.addRoutesFromSpecification(SPEC_WITHOUT_TAG_AND_OPERATION_ID, {fallbackControllerToIndex: false}), { message: /^Method.*in path.*has no tags!$/}, 'Should throw that a method has no tags');
 });
 
 test('Add routes by PATH and operationId', async t => {
