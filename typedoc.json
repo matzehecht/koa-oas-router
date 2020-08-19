@@ -1,0 +1,15 @@
+{
+    "inputFiles": ["./src"],
+    "mode": "file",
+    "exclude": ["**/tests/**"],
+    "excludeExternals": true,
+    "externalPattern": "node_modules/**",
+    "excludeNotExported": true,
+    "excludePrivate": true,
+    "excludeProtected": true,
+    "out": "docs",
+    "theme": "markdown",
+    "plugin": "typedoc-plugin-markdown",
+    "readme": "none",
+    "stripInternal": true
+}
