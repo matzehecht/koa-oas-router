@@ -1,12 +1,12 @@
-import * as path from "path";
-import { IRouterOptions } from "koa-router";
-import * as Router from "koa-router";
+import * as path from 'path';
+import { IRouterOptions } from 'koa-router';
+import * as Router from 'koa-router';
 
-import * as CONST from "./const.json";
-import * as STRINGS from "./strings.json";
-import { Context } from "koa";
+import * as CONST from './const.json';
+import * as STRINGS from './strings.json';
+import { Context } from 'koa';
 
-const validator = require("oas-validator");
+const validator = require('oas-validator');
 
 /**
  * A child class of the koa-router. It extends the koa-router by some features that can be used with oas.
@@ -38,72 +38,47 @@ export class KoaOasRouter<StateT = any, CustomT = {}> extends Router {
    * @returns {Promise<any>}
    * @memberof KoaOasRouter
    */
-  public async addRoutesFromSpecification(
-    specification: Specification,
-    opts?: AddFromSpecificationOpts
-  ): Promise<any> {
+  public async addRoutesFromSpecification(specification: Specification, opts?: AddFromSpecificationOpts): Promise<any> {
     // Initialize default values
-    const controllerBasePath =
-      opts?.controllerBasePath ||
-      CONST.addRoutesFromSpecification.CONTROLLER_BASE_PATH;
-    const validateSpecification =
-      opts?.validateSpecification ||
-      CONST.addRoutesFromSpecification.VALIDATE_SPECIFICATION;
-    const provideStubs =
-      opts?.provideStubs || CONST.addRoutesFromSpecification.PROVIDE_STUBS;
-    const mapControllerBy: mapControllerBy =
-      opts?.mapControllerBy ||
-      (CONST.addRoutesFromSpecification.MAP_CONTROLLER_BY as mapControllerBy);
+    const controllerBasePath = opts?.controllerBasePath || CONST.addRoutesFromSpecification.CONTROLLER_BASE_PATH;
+    const validateSpecification = opts?.validateSpecification || CONST.addRoutesFromSpecification.VALIDATE_SPECIFICATION;
+    const provideStubs = opts?.provideStubs || CONST.addRoutesFromSpecification.PROVIDE_STUBS;
+    const mapControllerBy: mapControllerBy = opts?.mapControllerBy || (CONST.addRoutesFromSpecification.MAP_CONTROLLER_BY as mapControllerBy);
 
     if (validateSpecification) {
       if (!(await validator.validate(specification, {}))?.valid) {
-        throw new Error(
-          STRINGS.logger.fatal.addRoutesFromSpecification_SPECNOTVALID
-        );
+        throw new Error(STRINGS.logger.fatal.addRoutesFromSpecification_SPECNOTVALID);
       }
     }
 
     const importPromises: Array<Promise<void>> = [];
 
     if (!specification) {
-      Promise.reject(
-        STRINGS.logger.error.addRoutesFromSpecification_SPECUNDEFINED
-      );
+      Promise.reject(STRINGS.logger.error.addRoutesFromSpecification_SPECUNDEFINED);
     }
     if (!specification.paths) {
-      Promise.reject(
-        STRINGS.logger.error.addRoutesFromSpecification_PATHUNDEFINED
-      );
+      Promise.reject(STRINGS.logger.error.addRoutesFromSpecification_PATHUNDEFINED);
     }
 
     // Get the mapping tag or path -> operation (with operationId) -> {path, operationSpecification}
     let operationControllerMapping: OperationControllerMapping = {};
     switch (mapControllerBy) {
-      case "TAG":
-        operationControllerMapping = this.mapOperationsByTag(
-          specification.paths
-        );
+      case 'TAG':
+        operationControllerMapping = this.mapOperationsByTag(specification.paths);
         break;
-      case "PATH":
-        operationControllerMapping = this.mapOperationsByPath(
-          specification.paths
-        );
+      case 'PATH':
+        operationControllerMapping = this.mapOperationsByPath(specification.paths);
         break;
     }
 
     // For each tag:
     const tags: string[] = Object.keys(operationControllerMapping);
     tags.forEach((controllerName: string) => {
-      const operationMapping: OperationMapping =
-        operationControllerMapping[controllerName];
+      const operationMapping: OperationMapping = operationControllerMapping[controllerName];
 
       // Import the controller belonging to it
       importPromises.push(
-        import(
-          path.resolve(
-            path.join(controllerBasePath, controllerName.toPascalCase())
-          )
-        )
+        import(path.resolve(path.join(controllerBasePath, controllerName.toPascalCase())))
           .then((controller) => {
             // For each operation (with operationId)
             const operationIds: string[] = Object.keys(operationMapping);
@@ -114,12 +89,7 @@ export class KoaOasRouter<StateT = any, CustomT = {}> extends Router {
               const operationInController = controller[operationId];
               if (operationInController) {
                 // If it is defined: Map the funcion to the router by the path and the method.
-                this.mapToRouter(
-                  operation.path,
-                  operation.method,
-                  operationInController,
-                  controllerName.toPascalCase()
-                );
+                this.mapToRouter(operation.path, operation.method, operationInController, controllerName.toPascalCase());
               } else if (provideStubs) {
                 // If it is not defined: create a stub if the flag is set.
                 this.createStubFromSpec({
@@ -131,7 +101,7 @@ export class KoaOasRouter<StateT = any, CustomT = {}> extends Router {
           })
           .catch((error: NodeJS.ErrnoException) => {
             // If the module belonging to a specific tag (controller) isn't found: create a stub if the flag is set.
-            if (error.code === "MODULE_NOT_FOUND" && provideStubs) {
+            if (error.code === 'MODULE_NOT_FOUND' && provideStubs) {
               this.createStubFromSpec({ operationMapping });
             } else {
               throw error;
@@ -143,20 +113,16 @@ export class KoaOasRouter<StateT = any, CustomT = {}> extends Router {
     return Promise.all(importPromises);
   }
 
-  private createStubFromSpec(
-    toStub:
-      | { operationMapping: OperationMapping }
-      | { path: string; method: string }
-  ) {
+  private createStubFromSpec(toStub: { operationMapping: OperationMapping } | { path: string; method: string }) {
     const dummyFunction = (ctx: Context, next: () => void) => {
-      ctx.body = { code: 501, message: "Not Implemented" };
+      ctx.body = { code: 501, message: 'Not Implemented' };
       ctx.status = 501;
     };
     if (!toStub) {
-      throw new Error("Specification cannot be undefined");
+      throw new Error('Specification cannot be undefined');
     }
-    if ("path" in toStub) {
-      this.mapToRouter(toStub.path, toStub.method, dummyFunction, "Stub");
+    if ('path' in toStub) {
+      this.mapToRouter(toStub.path, toStub.method, dummyFunction, 'Stub');
     } else {
       const opertionIds = Object.keys(toStub.operationMapping);
       opertionIds.forEach((operationId) => {
@@ -168,14 +134,9 @@ export class KoaOasRouter<StateT = any, CustomT = {}> extends Router {
     }
   }
 
-  private mapToRouter(
-    pathToMap: string,
-    method: string,
-    controllerFunction: (ctx: Context, next: () => void) => void,
-    controllerName: string
-  ): void {
-    pathToMap = pathToMap.replace(/{/g, ":").replace(/}/g, "");
-    controllerName = controllerName ? controllerName : "";
+  private mapToRouter(pathToMap: string, method: string, controllerFunction: (ctx: Context, next: () => void) => void, controllerName: string): void {
+    pathToMap = pathToMap.replace(/{/g, ':').replace(/}/g, '');
+    controllerName = controllerName ? controllerName : '';
     this.register(pathToMap, [method], controllerFunction);
     return;
   }
@@ -190,18 +151,10 @@ export class KoaOasRouter<StateT = any, CustomT = {}> extends Router {
         const operation = apiPath[methodName] as Operation;
 
         if (!operation.tags || !operation.tags[0]) {
-          throw new Error(
-            "Method " + methodName + " in path " + pathKey + " has no tags!"
-          );
+          throw new Error('Method ' + methodName + ' in path ' + pathKey + ' has no tags!');
         }
         if (!operation.operationId) {
-          throw new Error(
-            "Method " +
-              methodName +
-              " in path " +
-              pathKey +
-              " has no operationId!"
-          );
+          throw new Error('Method ' + methodName + ' in path ' + pathKey + ' has no operationId!');
         }
 
         const tag = operation.tags[0];
@@ -209,10 +162,7 @@ export class KoaOasRouter<StateT = any, CustomT = {}> extends Router {
           // If tag is already mapped:
           if (mapping[tag][operation.operationId]) {
             // Throw error if operationId is already used (shouldn't be possible in valid oas document!)
-            throw new Error(
-              "OperationId in specification isn't used uniquely! " +
-                operation.operationId
-            );
+            throw new Error("OperationId in specification isn't used uniquely! " + operation.operationId);
           } else {
             // Add the operation by it's Id to the tag in the mapping. As values add the path and the specification.
             mapping[tag][operation.operationId] = {
@@ -237,22 +187,17 @@ export class KoaOasRouter<StateT = any, CustomT = {}> extends Router {
   private mapOperationsByPath(paths: Paths): OperationControllerMapping {
     const mapping: OperationControllerMapping = {};
     Object.entries(paths).forEach(([path, operations]) => {
-      const mappedPath = path.replace(/[{}]/gi, "").replace("/", "_");
+      const mappedPath = path.replace(/[{}]/gi, '').replace('/', '_');
       Object.entries(operations).forEach(([method, operation]) => {
         if (!operation.operationId) {
-          throw new Error(
-            "Method " + method + " in path " + path + " has no operationId!"
-          );
+          throw new Error('Method ' + method + ' in path ' + path + ' has no operationId!');
         }
 
         if (mapping[mappedPath]) {
           // If path is already mapped:
           if (mapping[mappedPath][operation.operationId]) {
             // Throw error if operationId is already used (shouldn't be possible in valid oas document!)
-            throw new Error(
-              "OperationId in specification isn't used uniquely! " +
-                operation.operationId
-            );
+            throw new Error("OperationId in specification isn't used uniquely! " + operation.operationId);
           } else {
             // Add the operation by it's Id to the tag in the mapping. As values add the path and the specification.
             mapping[mappedPath][operation.operationId] = {
@@ -275,7 +220,7 @@ export class KoaOasRouter<StateT = any, CustomT = {}> extends Router {
   }
 }
 
-export { IRouterOptions } from "koa-router";
+export { IRouterOptions } from 'koa-router';
 
 /**
  * Options for adding the routes from a oas specification.
@@ -331,13 +276,13 @@ export type mapControllerBy =
    * @type {string}
    * @default
    */
-  | "TAG"
+  | 'TAG'
   /**
    * Maps the controller by the operation path.
    *
    * @type {string}
    */
-  | "PATH";
+  | 'PATH';
 
 interface OperationControllerMapping {
   [tagOrPath: string]: OperationMapping;
@@ -433,9 +378,7 @@ String.prototype.toPascalCase = function (): string {
     ? this.toString()
     : begins
         .map((word) => {
-          return (
-            word.charAt(0).toLocaleUpperCase() + word.substr(1).toLowerCase()
-          );
+          return word.charAt(0).toLocaleUpperCase() + word.substr(1).toLowerCase();
         })
-        .join("");
+        .join('');
 };
