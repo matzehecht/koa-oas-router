@@ -31,10 +31,27 @@ jobs:
       run: npm install
     - name: test
       run: npm test
+  generateDocs:
+    runs-on: ubuntu-latest
+    name: Generate docs
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Generate
+        run: npx typedoc
+      - name: Upload Documentation to Wiki
+        uses: SwiftDocOrg/github-wiki-publish-action@v1
+        with:
+          path: "docs"
+        env:
+          GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   publishNPM:
     runs-on: ubuntu-latest
     name: Publish to npm
-    needs: [test]
+    needs: [test, generateDocs]
     steps:
       - name: Checkout
         uses: actions/checkout@v1
