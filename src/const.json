@@ -2,6 +2,7 @@
     "addRoutesFromSpecification": {
         "CONTROLLER_BASE_PATH": "../controller",
         "VALIDATE_SPECIFICATION":  true,
-        "PROVIDE_STUBS": true
+        "PROVIDE_STUBS": true,
+        "MAP_CONTROLLER_BY": "TAG"
     }
 }
