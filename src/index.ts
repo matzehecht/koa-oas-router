@@ -48,8 +48,16 @@ export class KoaOasRouter<StateT = any, CustomT = {}> extends Router {
     const validateSpecification = opts?.validateSpecification || CONST.addRoutesFromSpecification.VALIDATE_SPECIFICATION;
     const provideStubs = opts?.provideStubs || CONST.addRoutesFromSpecification.PROVIDE_STUBS;
     const mapControllerBy: mapControllerBy = opts?.mapControllerBy || (CONST.addRoutesFromSpecification.MAP_CONTROLLER_BY as mapControllerBy);
+
     const fallbackControllerToIndex =
-      opts && typeof opts.fallbackControllerToIndex === 'boolean' ? opts.fallbackControllerToIndex : CONST.addRoutesFromSpecification.FALLBACK_CONTROLLER_TO_INDEX;
+      opts && typeof opts.fallbackControllerToIndex === 'boolean'
+        ? opts.fallbackControllerToIndex
+        : CONST.addRoutesFromSpecification.FALLBACK_CONTROLLER_TO_INDEX;
+
+    const fallbackControllerFunctionToPath =
+      opts && typeof opts.fallbackControllerFunctionToPath === 'boolean'
+        ? opts.fallbackControllerFunctionToPath
+        : CONST.addRoutesFromSpecification.FALLBACK_CONTROLLER_FUNCTION_TO_PATH;
 
     if (validateSpecification) {
       if (!(await validator.validate(specification, {}))?.valid) {
@@ -70,10 +78,10 @@ export class KoaOasRouter<StateT = any, CustomT = {}> extends Router {
     let operationControllerMapping: OperationControllerMapping = {};
     switch (mapControllerBy) {
       case 'TAG':
-        operationControllerMapping = this.mapOperationsByTag(specification.paths, fallbackControllerToIndex);
+        operationControllerMapping = this.mapOperationsByTag(specification.paths, { fallbackControllerToIndex, fallbackControllerFunctionToPath });
         break;
       case 'PATH':
-        operationControllerMapping = this.mapOperationsByPath(specification.paths);
+        operationControllerMapping = this.mapOperationsByPath(specification.paths, { fallbackControllerFunctionToPath });
         break;
     }
 
@@ -87,7 +95,7 @@ export class KoaOasRouter<StateT = any, CustomT = {}> extends Router {
         import(path.resolve(path.join(controllerBasePath, controllerName === 'index' ? controllerName.toPascalCase() : 'index')))
           .then((controller) => {
             // For each operation (with operationId)
-            Object.entries(operationMapping).forEach(([operationId, operation]: [string, Operation]) => {
+            Object.entries(operationMapping).forEach(([operationId, operation]) => {
               // get the function in controller and check if it is defined.
               const operationInController = controller[operationId];
               if (operationInController) {
@@ -144,26 +152,28 @@ export class KoaOasRouter<StateT = any, CustomT = {}> extends Router {
     return;
   }
 
-  private mapOperationsByTag(paths: Paths, fallbackControllerToIndex: boolean): OperationControllerMapping {
+  private mapOperationsByTag(paths: Paths, opts?: { fallbackControllerToIndex?: boolean, fallbackControllerFunctionToPath?: boolean }): OperationControllerMapping {
     const mapping: OperationControllerMapping = {};
     Object.entries(paths).forEach(([path, pathObj]: [string, Path]) => {
       Object.entries(pathObj).forEach(([method, operation]: [string, Operation]) => {
-        if ((!operation.tags || !operation.tags[0]) && !fallbackControllerToIndex) {
+        if ((!operation.tags || !operation.tags[0]) && !opts?.fallbackControllerToIndex) {
           throw new Error('Method ' + method + ' in path ' + path + ' has no tags!');
         }
-        if (!operation.operationId) {
+        
+        if (!operation.operationId && !opts?.fallbackControllerFunctionToPath) {
           throw new Error('Method ' + method + ' in path ' + path + ' has no operationId!');
         }
 
         const tag = (operation.tags && operation.tags[0]) || 'index';
+        const operationId = operation.operationId || `${method.toLowerCase()}${path.toPascalCase()}`;
         if (mapping[tag]) {
           // If tag is already mapped:
-          if (mapping[tag][operation.operationId]) {
+          if (mapping[tag][operationId]) {
             // Throw error if operationId is already used (shouldn't be possible in valid oas document!)
-            throw new Error("OperationId in specification isn't used uniquely! " + operation.operationId);
+            throw new Error("Controller function name isn't used uniquely! " + operationId);
           } else {
             // Add the operation by it's Id to the tag in the mapping. As values add the path and the specification.
-            mapping[tag][operation.operationId] = {
+            mapping[tag][operationId] = {
               path,
               method,
               operationSpec: operation,
@@ -171,7 +181,7 @@ export class KoaOasRouter<StateT = any, CustomT = {}> extends Router {
           }
         } else {
           mapping[tag] = {};
-          mapping[tag][operation.operationId] = {
+          mapping[tag][operationId] = {
             path,
             method,
             operationSpec: operation,
@@ -182,23 +192,24 @@ export class KoaOasRouter<StateT = any, CustomT = {}> extends Router {
     return mapping;
   }
 
-  private mapOperationsByPath(paths: Paths): OperationControllerMapping {
+  private mapOperationsByPath(paths: Paths, opts?: { fallbackControllerFunctionToPath?: boolean }): OperationControllerMapping {
     const mapping: OperationControllerMapping = {};
     Object.entries(paths).forEach(([path, operations]) => {
       const mappedPath = path.replace(/[{}]/gi, '').replace('/', '_');
       Object.entries(operations).forEach(([method, operation]) => {
-        if (!operation.operationId) {
+        if (!operation.operationId && !opts?.fallbackControllerFunctionToPath) {
           throw new Error('Method ' + method + ' in path ' + path + ' has no operationId!');
         }
 
+        const operationId = operation.operationId || `${method.toLowerCase()}${path.toPascalCase()}`;
         if (mapping[mappedPath]) {
           // If path is already mapped:
-          if (mapping[mappedPath][operation.operationId]) {
+          if (mapping[mappedPath][operationId]) {
             // Throw error if operationId is already used (shouldn't be possible in valid oas document!)
-            throw new Error("OperationId in specification isn't used uniquely! " + operation.operationId);
+            throw new Error("Controller function name isn't used uniquely! " + operationId);
           } else {
             // Add the operation by it's Id to the tag in the mapping. As values add the path and the specification.
-            mapping[mappedPath][operation.operationId] = {
+            mapping[mappedPath][operationId] = {
               path,
               method,
               operationSpec: operation,
@@ -206,7 +217,7 @@ export class KoaOasRouter<StateT = any, CustomT = {}> extends Router {
           }
         } else {
           mapping[mappedPath] = {};
-          mapping[mappedPath][operation.operationId] = {
+          mapping[mappedPath][operationId] = {
             path,
             method,
             operationSpec: operation,
@@ -268,6 +279,13 @@ export interface AddFromSpecificationOpts {
    * @default true
    */
   fallbackControllerToIndex?: boolean;
+  /**
+   * Should the controller function name fallback to method + path (method in lower and path in PascalCase)?
+   *
+   * @type {boolean}
+   * @default true
+   */
+  fallbackControllerFunctionToPath?: boolean;
 }
 
 /**
