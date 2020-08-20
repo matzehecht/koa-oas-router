@@ -4,6 +4,7 @@
         "VALIDATE_SPECIFICATION":  true,
         "PROVIDE_STUBS": true,
         "MAP_CONTROLLER_BY": "TAG",
-        "FALLBACK_CONTROLLER_TO_INDEX": true
+        "FALLBACK_CONTROLLER_TO_INDEX": true,
+        "FALLBACK_CONTROLLER_FUNCTION_TO_PATH": true
     }
 }
