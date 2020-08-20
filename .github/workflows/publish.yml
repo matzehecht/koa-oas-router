@@ -49,7 +49,7 @@ jobs:
         with:
           path: "docs"
         env:
-          GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
   publishNPM:
     runs-on: ubuntu-latest
     name: Publish to npm
