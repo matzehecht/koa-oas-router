@@ -92,7 +92,7 @@ export class KoaOasRouter<StateT = any, CustomT = {}> extends Router {
 
       // Import the controller belonging to it
       importPromises.push(
-        import(path.resolve(path.join(controllerBasePath, controllerName === 'index' ? controllerName.toPascalCase() : 'index')))
+        import(path.resolve(path.join(controllerBasePath, controllerName !== 'index' ? controllerName.toPascalCase() : 'index')))
           .then((controller) => {
             // For each operation (with operationId)
             Object.entries(operationMapping).forEach(([operationId, operation]) => {

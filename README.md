@@ -48,11 +48,11 @@ const router = new KoaOasRouter(opts);
 router.addRoutesFromSpecification(spec);
 ```
 
-For more detailed information look at the [API](https://github.com/matzehecht/koa-oas-router/wiki/README.md).
+For more detailed information look at the [API](https://github.com/matzehecht/koa-oas-router/wiki/README).
 
 ## Docs
 
-[API](https://github.com/matzehecht/koa-oas-router/wiki/README.md)
+[API](https://github.com/matzehecht/koa-oas-router/wiki/README)
 
 ## Run tests
 
