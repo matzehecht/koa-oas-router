@@ -2,7 +2,7 @@ name: Publish
 
 on:
   push:
-    branches: [ master ]
+    branches: [main]
 
 jobs:
   test:
@@ -10,7 +10,7 @@ jobs:
     name: Test
     strategy:
       matrix:
-        node-version: [10.x, 11.x, 12.x, 13.x, 14.x]
+        node-version: [10.x, 11.x, 12.x, 13.x, 14.x, 15.x]
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js ${{ matrix.node-version }}
@@ -54,13 +54,13 @@ jobs:
         run: npm ci
       - name: Generate
         run: npx typedoc
-      - name: Push Wiki Changes
-        uses: Andrew-Chen-Wang/github-wiki-action@v2
-        env:
-          WIKI_DIR: docs/
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GH_MAIL: ${{ secrets.YOUR_EMAIL }}
-          GH_NAME: ${{ github.repository_owner }}
+      - name: Upload docs
+        uses: actions/upload-artifact@v2.2.3
+        with:
+          name: docs
+          path: docs
+          if-no-files-found: error
+          retention-days: 1
   publishNPM:
     runs-on: ubuntu-latest
     name: Publish to npm
@@ -76,6 +76,11 @@ jobs:
         run: npm ci
       - name: build
         run: npm run build
+      - name: Download docs
+        uses: actions/download-artifact@v2.0.9
+        with:
+          name: docs
+          path: docs
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
