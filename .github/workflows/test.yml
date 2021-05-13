@@ -63,7 +63,7 @@ jobs:
           if-no-files-found: error
   test-release:
     runs-on: ubuntu-latest
-    name: Publish to npm
+    name: Test publish
     needs: [test, generateDocs]
     steps:
       - name: Checkout
@@ -84,4 +84,5 @@ jobs:
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npx semantic-release --dry-run
