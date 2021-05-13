@@ -37,7 +37,7 @@ jobs:
   publishNPM:
     runs-on: ubuntu-latest
     name: Publish to npm
-    needs: [test, generateDocs]
+    needs: [generateDocs]
     steps:
       - name: Checkout
         uses: actions/checkout@v1
