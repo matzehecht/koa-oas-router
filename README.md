@@ -1,4 +1,5 @@
 # Welcome to koa-oas-router 👋
+
 [![Version](https://img.shields.io/npm/v/koa-oas-router.svg)](https://www.npmjs.com/package/koa-oas-router)
 [![Documentation](https://img.shields.io/badge/documentation-yes-brightgreen.svg)](https://github.com/matzehecht/koa-oas-router#readme)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/matzehecht/koa-oas-router/graphs/commit-activity)
@@ -7,7 +8,7 @@
 
 > This module extends the koa-router with some features usable with oas.
 
-### 🏠 [Homepage](https://github.com/matzehecht/koa-oas-router)
+## 🏠 [Homepage](https://github.com/matzehecht/koa-oas-router)
 
 ## Features
 
@@ -24,7 +25,8 @@ npm i koa-oas-router --save
 
 ## Usage
 
-#### Javascript
+### Javascript
+
 ```js
 const KoaOasRouter = require('koa-oas-router');
 
@@ -36,7 +38,8 @@ const router = new KoaOasRouter.KoaOasRouter(opts);
 router.addRoutesFromSpecification(spec);
 ```
 
-#### Typescript
+### Typescript
+
 ```typescript
 import { KoaOasRouter } from 'koa-oas-router';
 
@@ -64,7 +67,7 @@ npm run test
 
 👤 **Matthias Hecht**
 
-* Github: [@matzehecht](https://github.com/matzehecht)
+- Github: [@matzehecht](https://github.com/matzehecht)
 
 ## 🤝 Contributing
 
@@ -75,7 +78,6 @@ Feel free to check [issues page](https://github.com/matzehecht/koa-oas-router/is
 ## Show your support
 
 Give a ⭐️ if this project helped you!
-
 
 ## 📝 License
 
