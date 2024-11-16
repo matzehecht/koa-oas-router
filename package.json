@@ -2,12 +2,16 @@
   "name": "koa-oas-router",
   "version": "0.0.0-development",
   "description": "This module extends the koa-router with some features usable with oas.",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/esm/index.d.ts",
   "scripts": {
     "pretest": "npm run build",
     "test": "ava",
-    "build": "rimraf ./dist && tsc",
+    "prebuild": "rimraf ./dist",
+    "build": "npm run build:esm && npm run build:cjs",
+    "build:cjs": "tsc -p tsconfig.cjs.json",
+    "build:esm": "tsc",
     "semantic-release": "semantic-release"
   },
   "repository": {
@@ -40,7 +44,7 @@
   "ava": {
     "typescript": {
       "rewritePaths": {
-        "src/": "dist/"
+        "src/": "dist/esm/"
       },
       "compile": false
     },
