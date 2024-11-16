@@ -1,9 +1,9 @@
 name: Test
 on:
   push:
-    branches: [main]
+    branches: [main, beta, alpha]
   pull_request:
-    branches: [main]
+    branches: [main, beta, alpha]
 
 jobs:
   test:
@@ -11,18 +11,18 @@ jobs:
     name: Test
     strategy:
       matrix:
-        node-version: [16, 17]
+        node-version: [18, 19, 20, 21, 22, 23]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
       - name: Get npm cache directory
         id: npm-cache
         run: |
           echo "::set-output name=dir::$(npm config get cache)"
-      - uses: actions/cache@v2
+      - uses: actions/cache@v4
         with:
           path: ${{ steps.npm-cache.outputs.dir }}
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -36,16 +36,16 @@ jobs:
     runs-on: ubuntu-latest
     name: Generate docs
     steps:
-      - uses: actions/checkout@v2
-      - name: Use Node.js 18
-        uses: actions/setup-node@v2
+      - uses: actions/checkout@v4
+      - name: Use Node.js 22
+        uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 22
       - name: Get npm cache directory
         id: npm-cache
         run: |
           echo "::set-output name=dir::$(npm config get cache)"
-      - uses: actions/cache@v2
+      - uses: actions/cache@v4
         with:
           path: ${{ steps.npm-cache.outputs.dir }}
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -56,7 +56,7 @@ jobs:
       - name: Generate
         run: npx typedoc
       - name: Upload docs
-        uses: actions/upload-artifact@v2.2.3
+        uses: actions/upload-artifact@v4
         with:
           name: docs
           path: docs
@@ -67,19 +67,19 @@ jobs:
     needs: [generateDocs]
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+          persist-credentials: false
       - name: Setup Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 22
       - name: Install dependencies
         run: npm ci
       - name: build
         run: npm run build
       - name: Download docs
-        uses: actions/download-artifact@v2.0.9
+        uses: actions/download-artifact@v4
         with:
           name: docs
           path: docs
