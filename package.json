@@ -2,12 +2,16 @@
   "name": "koa-oas-router",
   "version": "0.0.0-development",
   "description": "This module extends the koa-router with some features usable with oas.",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/esm/index.d.ts",
   "scripts": {
     "pretest": "npm run build",
     "test": "ava",
-    "build": "rimraf ./dist && tsc",
+    "prebuild": "rimraf ./dist",
+    "build": "npm run build:esm && npm run build:cjs",
+    "build:cjs": "tsc -p tsconfig.cjs.json",
+    "build:esm": "tsc",
     "semantic-release": "semantic-release"
   },
   "repository": {
@@ -26,21 +30,21 @@
   },
   "homepage": "https://github.com/matzehecht/koa-oas-router#readme",
   "devDependencies": {
-    "@ava/typescript": "^4.0.0",
-    "@types/node": "^18.15.3",
-    "ava": "^5.2.0",
+    "@ava/typescript": "^5.0.0",
+    "@types/node": "^22.9.0",
+    "ava": "^6.2.0",
     "cz-conventional-changelog": "^3.3.0",
-    "rimraf": "^4.4.0",
-    "semantic-release": "^20.1.1",
-    "ts-node": "^10.9.1",
+    "rimraf": "^6.0.1",
+    "semantic-release": "^24.2.0",
+    "ts-node": "^10.9.2",
     "tslint": "^6.1.3",
-    "typedoc": "^0.23.26",
-    "typescript": "^4.9.5"
+    "typedoc": "^0.26.11",
+    "typescript": "^5.6.3"
   },
   "ava": {
     "typescript": {
       "rewritePaths": {
-        "src/": "dist/"
+        "src/": "dist/cjs/"
       },
       "compile": false
     },
@@ -49,10 +53,10 @@
     ]
   },
   "dependencies": {
-    "@semantic-release/changelog": "^6.0.2",
+    "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
-    "@types/koa-router": "^7.4.4",
-    "koa-router": "^12.0.0",
+    "@types/koa-router": "^7.4.8",
+    "koa-router": "^13.0.1",
     "oas-validator": "^5.0.8"
   },
   "config": {
