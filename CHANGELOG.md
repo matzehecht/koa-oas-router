@@ -1,3 +1,10 @@
+## [3.1.1-beta.1](https://github.com/matzehecht/koa-oas-router/compare/v3.1.0...v3.1.1-beta.1) (2024-12-11)
+
+
+### Bug Fixes
+
+* update deps ([245cce6](https://github.com/matzehecht/koa-oas-router/commit/245cce610a72512b9f91c136ffaa844025e8e7ae))
+
 # [3.1.0](https://github.com/matzehecht/koa-oas-router/compare/v3.0.2...v3.1.0) (2024-11-16)
 
 
