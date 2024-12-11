@@ -31,7 +31,7 @@
   "homepage": "https://github.com/matzehecht/koa-oas-router#readme",
   "devDependencies": {
     "@ava/typescript": "^5.0.0",
-    "@types/node": "^22.9.0",
+    "@types/node": "^22.10.2",
     "ava": "^6.2.0",
     "cz-conventional-changelog": "^3.3.0",
     "rimraf": "^6.0.1",
