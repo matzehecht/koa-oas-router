@@ -31,6 +31,8 @@
   "homepage": "https://github.com/matzehecht/koa-oas-router#readme",
   "devDependencies": {
     "@ava/typescript": "^5.0.0",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
     "@types/node": "^22.10.2",
     "ava": "^6.2.0",
     "cz-conventional-changelog": "^3.3.0",
@@ -53,8 +55,6 @@
     ]
   },
   "dependencies": {
-    "@semantic-release/changelog": "^6.0.3",
-    "@semantic-release/git": "^10.0.1",
     "@types/koa-router": "^7.4.8",
     "koa-router": "^13.0.1",
     "oas-validator": "^5.0.8"
